@@ -218,6 +218,7 @@ NSString * const VLCUseClassicVideoPlayerLayoutKey = @"VLCUseClassicVideoPlayerL
     _returnButtonBottomConstraint.active = NO;
     _playQueueButtonBottomConstraint.active = NO;
 
+    [self movePlaybackControlsToBottomBar];
     [self setupAudioDecorativeView];
     [self.controlsBar update];
     [self updateFloatOnTopIndicator];
@@ -246,6 +247,28 @@ NSString * const VLCUseClassicVideoPlayerLayoutKey = @"VLCUseClassicVideoPlayerL
             [controlsBackgroundView applyConstraintsToFillSuperview];
         }
     }
+}
+
+- (void)movePlaybackControlsToBottomBar
+{
+    if (self.classic) {
+        return;
+    }
+
+    NSStackView * const buttons = (NSStackView *)self.controlsBar.playbackRateButton.superview;
+    NSArray<NSButton *> * const playbackButtons = @[
+        self.controlsBar.backwardButton,
+        self.controlsBar.playButton,
+        self.controlsBar.forwardButton
+    ];
+    for (NSUInteger index = 0; index < playbackButtons.count; ++index) {
+        NSButton * const button = playbackButtons[index];
+        [self.centralControlsStackView removeArrangedSubview:button];
+        [button removeFromSuperview];
+        button.shadow = nil;
+        [buttons insertArrangedSubview:button atIndex:index];
+    }
+    self.centralControlsStackView.hidden = YES;
 }
 
 - (void)updateLyricsInsets
@@ -323,6 +346,13 @@ NSString * const VLCUseClassicVideoPlayerLayoutKey = @"VLCUseClassicVideoPlayerL
         self.nextButtonSizeConstraint.constant = VLCUIUnits.mediumPlaybackControlButtonSize;
         self.jumpBackwardButtonSizeConstraint.constant = VLCUIUnits.mediumPlaybackControlButtonSize;
         self.jumpForwardButtonSizeConstraint.constant = VLCUIUnits.mediumPlaybackControlButtonSize;
+    }
+
+    if (!self.classic) {
+        const CGFloat buttonSize = self.controlsBar.playbackRateButton.fittingSize.height;
+        self.prevButtonSizeConstraint.constant = buttonSize;
+        self.playButtonSizeConstraint.constant = buttonSize;
+        self.nextButtonSizeConstraint.constant = buttonSize;
     }
 }
 

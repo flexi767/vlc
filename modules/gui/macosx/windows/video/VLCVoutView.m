@@ -163,13 +163,7 @@
 - (void)mouseDown:(NSEvent *)o_event
 {
     if (([o_event type] == NSEventTypeLeftMouseDown) && (! ([o_event modifierFlags] &  NSEventModifierFlagControl))) {
-        if (o_event.clickCount == 1) {
-            vlc_mutex_lock(&_mutex);
-            if (_wnd) {
-                vlc_window_ReportMousePressed(_wnd, MOUSE_BUTTON_LEFT);
-            }
-            vlc_mutex_unlock(&_mutex);
-        } else if (o_event.clickCount == 2) {
+        if (o_event.clickCount == 2) {
             [_playerController toggleFullscreen];
         }
     } else if (([o_event type] == NSEventTypeRightMouseDown) ||
@@ -181,18 +175,6 @@
     [super mouseDown: o_event];
 }
 
-- (void)mouseUp:(NSEvent *)event
-{
-    if (event.type == NSEventTypeLeftMouseUp) {
-        vlc_mutex_lock(&_mutex);
-        if (_wnd) {
-            vlc_window_ReportMouseReleased(_wnd, MOUSE_BUTTON_LEFT);
-        }
-        vlc_mutex_unlock(&_mutex);
-    }
-
-    [super mouseUp:event];
-}
 
 
 - (void)rightMouseDown:(NSEvent *)o_event
